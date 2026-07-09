@@ -414,7 +414,4 @@ python3 -c "import random; random.seed(42); nums = random.sample(range(-100000, 
 <tr><td>&lt;elvigonz&gt;</td></tr>
 </table>
 
-## Licenza
-
-© 2026 Alessio Severi end Elvis James Gonzales Oyolo — licensed under [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/).
-See the [LICENSE](LICENSE) file for details.
+© 2026 Alessio Severi end Elvis James Gonzales Oyolo.
