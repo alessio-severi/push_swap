@@ -183,7 +183,7 @@ governata da una regola che ne esprime la condizione di equivalenza, formulata c
 le dimensioni minime di `a` e `b` sotto le quali la sostituzione è garantita
 produrre lo stesso stato finale dello stack della sottosequenza originale; la
 sostituzione viene applicata solo quando tale condizione è soddisfatta. Attualmente
-sono definite 179 regole di questo tipo,
+sono definiti 179 pattern di questo tipo,
 distribuite nei vari file `try_*`.
 
 ---
