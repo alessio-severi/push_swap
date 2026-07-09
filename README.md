@@ -242,7 +242,7 @@ Se durante la lettura delle mosse ne arriva una non valida (o un argomento numer
 
 # Risultati dei test
 
-Dati estratti dagli screenshot dei test eseguiti (uno per riga di tabella), raggruppati per algoritmo e per tipo di test. Le mosse prodotte da `push_swap` sono state sempre passate al checker per confermare `OK` prima di registrare il conteggio delle operazioni; in tutte le tabelle sotto, `KO` è sempre risultato `0`.
+Dati estratti dai test eseguiti (uno per riga di tabella), raggruppati per algoritmo e per tipo di test. Le mosse prodotte da `push_swap` sono state sempre passate al checker per confermare `OK` prima di registrare il conteggio delle operazioni; in tutte le tabelle sotto, `KO` è sempre risultato `0`.
 
 ## Complex
 
