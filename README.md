@@ -206,7 +206,7 @@ Un **checker** è un programma separato che controlla se una sequenza di mosse (
 ## Come si compila
 
 ```bash
-make bonus  # compila, crea gli eseguibile "push_swa" e "checker"
+make bonus  # compila, crea gli eseguibile "push_swap" e "checker"
 make clean  # cancella i file .o
 make fclean # cancella anche gli eseguibili
 make re     # fclean + all, ricompila tutto da zero
