@@ -206,9 +206,9 @@ Un **checker** è un programma separato che controlla se una sequenza di mosse (
 ## Come si compila
 
 ```bash
-make        # compila, crea l'eseguibile "checker"
-make clean  # cancella i file .o (compilati a metà, intermedi)
-make fclean # cancella anche l'eseguibile
+make bonus  # compila, crea gli eseguibile "push_swa" e "checker"
+make clean  # cancella i file .o
+make fclean # cancella anche gli eseguibili
 make re     # fclean + all, ricompila tutto da zero
 ```
 
@@ -413,3 +413,8 @@ python3 -c "import random; random.seed(42); nums = random.sample(range(-100000, 
 <tr><td>&lt;aseveri&gt;</td></tr>
 <tr><td>&lt;elvigonz&gt;</td></tr>
 </table>
+
+## Licenza
+
+© 2026 Alessio Severi end James Gonzales — licensed under [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/).
+See the [LICENSE](LICENSE) file for details.
