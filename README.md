@@ -414,4 +414,4 @@ python3 -c "import random; random.seed(42); nums = random.sample(range(-100000, 
 <tr><td>&lt;elvigonz&gt;</td></tr>
 </table>
 
-© 2026 Alessio Severi end Elvis James Gonzales Oyolo.
+© 2026 Alessio Severi and Elvis James Gonzales Oyolo.
