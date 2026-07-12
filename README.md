@@ -713,9 +713,9 @@ if __name__ == "__main__":
 ## Contributi
 
 <table>
-<tr><th>Login</th></tr>
-<tr><td>&lt;aseveri&gt;</td></tr>
-<tr><td>&lt;elvigonz&gt;</td></tr>
+<tr><th>Login</th><th>Contributi</th></tr>
+<tr><td>&lt;aseveri&gt;</td><td>push_swap</td></tr>
+<tr><td>&lt;elvigonz&gt;</td><td>checker</td></tr>
 </table>
 
 © 2026 Alessio Severi and Elvis James Gonzales Oyolo.
