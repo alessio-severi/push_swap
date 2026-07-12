@@ -396,6 +396,310 @@ Stessa cosa, ma con `random.seed(42)`: utile per ottenere sempre lo stesso input
 python3 -c "import random; random.seed(42); nums = random.sample(range(-100000, 100000), 500); print('./push_swap --bench --complex ' + ' '.join(map(str, nums)))"
 ```
 
+## Test generico su un flag (`testgeneric_flag.py`)
+
+Lancia migliaia di test (5000 di default) con `N` numeri casuali, passa l'output di `push_swap --complex` al checker per verificare `OK`, e alla fine stampa statistiche (media, minimo, massimo mosse) e quante volte è stato superato un limite di mosse (`sfori`).
+
+```python
+python3 - <<'PY'
+import random
+import subprocess
+import sys
+
+CHECKER = "./checker_Mac"
+
+# Setaup
+RUN_100 = True
+RUN_500 = False
+
+TESTS_100 = 5000
+TESTS_500 = 5000
+
+LIMIT_100 = 700
+LIMIT_500 = 5500   # oppure 5000
+
+SEED = 42
+
+
+def run_test(n, tests, limit, value_min, value_max):
+    random.seed(SEED)
+
+    totals = []
+    over = []
+
+    for t in range(tests):
+        nums = random.sample(range(value_min, value_max), n)
+        args = list(map(str, nums))
+
+        ps = subprocess.run(
+            ["./push_swap", "--complex"] + args,
+            capture_output=True,
+            text=True
+        )
+
+        if ps.returncode != 0:
+            print("push_swap error")
+            print("N:", n)
+            print("test:", t)
+            print(ps.stderr)
+            sys.exit(1)
+
+        moves = [line for line in ps.stdout.splitlines() if line.strip()]
+        count = len(moves)
+
+        chk = subprocess.run(
+            [CHECKER] + args,
+            input=ps.stdout,
+            capture_output=True,
+            text=True
+        )
+
+        if chk.stdout.strip() != "OK":
+            print("KO")
+            print("N:", n)
+            print("test:", t)
+            print("checker output:", chk.stdout, chk.stderr)
+            print("moves:", count)
+            print('ARG="{}"'.format(" ".join(args)))
+            sys.exit(1)
+
+        totals.append(count)
+
+        if count >= limit:
+            over.append((t, count, nums))
+
+    print()
+    print("N:", n)
+    print("test:", len(totals))
+    print("limite:", limit)
+    print("media:", sum(totals) / len(totals))
+    print("min:", min(totals))
+    print("max:", max(totals))
+    print("sfori >=", limit, ":", len(over), "/", len(totals))
+    print("percentuale sfori:", (len(over) * 100) / len(totals), "%")
+
+    if over:
+        print()
+        print("Primi 5 sfori:")
+        for t, count, nums in over[:5]:
+            print("test:", t, "mosse:", count)
+            print('ARG="{}"'.format(" ".join(map(str, nums))))
+
+
+if RUN_100:
+    run_test(100, TESTS_100, LIMIT_100, -10000, 10000)
+
+if RUN_500:
+    run_test(500, TESTS_500, LIMIT_500, -100000, 100000)
+PY
+```
+
+## Test su `--medium` a diversi livelli di disorder (`test_medium_disorder.py`)
+
+Uso: `python3 test_medium_disorder.py 500 1000` (N elementi, numero di test). Costruisce input con un numero crescente di scambi rispetto a una sequenza ordinata (misurando il `disorder` reale come frazione di coppie invertite), scarta i casi che superano `max_disorder`, e per ciascun livello stampa media/min/max delle mosse e quanti `KO` sono stati rilevati dal checker.
+
+```python
+# python3 test_medium_disorder.py 500 1000
+import random
+import subprocess
+import statistics
+import sys
+
+def disorder(arr):
+    mistakes = 0
+    total = 0
+    n = len(arr)
+    for i in range(n):
+        for j in range(i + 1, n):
+            total += 1
+            if arr[i] > arr[j]:
+                mistakes += 1
+    return mistakes / total if total else 0.0
+
+def make_swapped(n, swaps):
+    arr = list(range(n))
+    for _ in range(swaps):
+        i = random.randrange(n)
+        j = random.randrange(n)
+        arr[i], arr[j] = arr[j], arr[i]
+    return arr
+
+def run_push_swap(arr):
+    args = ["./push_swap", "--medium"] + [str(x) for x in arr]
+    out = subprocess.check_output(args, text=True)
+    if not out.strip():
+        return 0, out
+
+    moves = [line for line in out.splitlines() if line.strip()]
+    return len(moves), out
+
+def run_checker(arr, moves):
+    args = ["./checker_Mac"] + [str(x) for x in arr]
+    p = subprocess.run(
+        args,
+        input=moves,
+        text=True,
+        capture_output=True
+    )
+    return p.stdout.strip()
+
+def test(n, swaps, tests, seed=42, max_disorder=0.5):
+    random.seed(seed)
+
+    counts = []
+    disorders = []
+    ko = 0
+    skipped = 0
+
+    for _ in range(tests):
+        arr = make_swapped(n, swaps)
+        d = disorder(arr)
+
+        if d >= max_disorder:
+            skipped += 1
+            continue
+
+        count, moves = run_push_swap(arr)
+        res = run_checker(arr, moves)
+
+        if res != "OK":
+            ko += 1
+            print("KO input:", arr)
+            print("checker:", res)
+            break
+
+        counts.append(count)
+        disorders.append(d)
+
+    if not counts:
+        print(f"N={n}, swaps={swaps}: no valid tests under disorder {max_disorder}")
+        return
+
+    print(f"N: {n}")
+    print(f"swaps: {swaps}")
+    print(f"valid tests: {len(counts)} / {tests}")
+    print(f"skipped disorder >= {max_disorder}: {skipped}")
+    print(f"avg disorder: {statistics.mean(disorders):.5f}")
+    print(f"max disorder: {max(disorders):.5f}")
+    print(f"media: {statistics.mean(counts):.2f}")
+    print(f"min: {min(counts)}")
+    print(f"max: {max(counts)}")
+    print(f"KO: {ko}")
+    print()
+
+if __name__ == "__main__":
+    n = int(sys.argv[1])
+    tests = int(sys.argv[2])
+
+    #for swaps in [1, 2, 3, 5, 8, 10, 15, 20, 30]:
+    for swaps in [1, 2, 3, 5, 8, 10, 15, 20, 30, 50, 75, 100, 125, 150, 175, 200, 225, 250, 300, 350, 400, 500]:
+        test(n, swaps, tests)
+```
+
+## Test su `--complex` a diversi livelli di disorder (`test_complex_disorder.py`)
+
+Uso: `python3 test_complex_disorder.py 100 700 5000` (N elementi, limite di mosse, numero di test). A differenza dello script precedente, costruisce input partendo da una sequenza **invertita** e applicando scambi mirati per avvicinarsi a un `target_disorder` scelto (`0.6` fino a `1.0`), così da testare `--complex` proprio nella fascia di disordine più alto per cui è stato pensato.
+
+```python
+# python3 test_complex_disorder.py 100 700 5000
+import random
+import subprocess
+import statistics
+import sys
+
+CHECKER = "./checker_Mac"
+
+def disorder(arr):
+    mistakes = 0
+    total = 0
+    n = len(arr)
+    for i in range(n):
+        for j in range(i + 1, n):
+            total += 1
+            if arr[i] > arr[j]:
+                mistakes += 1
+    return mistakes / total if total else 0.0
+
+def make_high_disorder(n, target_disorder, seed):
+    random.seed(seed)
+    arr = list(range(n - 1, -1, -1))
+    swaps = int((1.0 - target_disorder) * n)
+    for _ in range(swaps):
+        i = random.randrange(n)
+        j = random.randrange(n)
+        arr[i], arr[j] = arr[j], arr[i]
+    return arr
+
+def run_push_swap(arr):
+    args = ["./push_swap", "--complex"] + [str(x) for x in arr]
+    out = subprocess.check_output(args, text=True)
+    if not out.strip():
+        return 0, out
+    moves = [line for line in out.splitlines() if line.strip()]
+    return len(moves), out
+
+def run_checker(arr, moves):
+    args = [CHECKER] + [str(x) for x in arr]
+    p = subprocess.run(args, input=moves, text=True, capture_output=True)
+    return p.stdout.strip()
+
+def test(n, limit, target_disorder, tests):
+    counts = []
+    disorders = []
+    over = []
+    ko = 0
+
+    for t in range(tests):
+        arr = make_high_disorder(n, target_disorder, seed=t)
+        d = disorder(arr)
+
+        count, moves = run_push_swap(arr)
+        res = run_checker(arr, moves)
+
+        if res != "OK":
+            ko += 1
+            print("KO input:", arr)
+            print("checker:", res)
+            break
+
+        counts.append(count)
+        disorders.append(d)
+        if count >= limit:
+            over.append((t, count, arr))
+
+    if not counts:
+        print(f"N={n}, target_disorder={target_disorder:.2f}: no valid tests")
+        return
+
+    print(f"N: {n}")
+    print(f"test: {tests}")
+    print(f"target disorder: {target_disorder:.2f}")
+    print(f"avg disorder reale: {statistics.mean(disorders):.4f}")
+    print(f"min disorder reale: {min(disorders):.4f}")
+    print(f"max disorder reale: {max(disorders):.4f}")
+    print(f"media: {statistics.mean(counts):.2f}")
+    print(f"min: {min(counts)}")
+    print(f"max: {max(counts)}")
+    print(f"KO: {ko}")
+    print(f"sfori >= {limit}: {len(over)} / {tests}")
+    if over:
+        print("Primi 5 sfori:")
+        for t, count, arr in over[:5]:
+            print(f"  test: {t} mosse: {count}")
+            print(f'  ARG="{" ".join(map(str, arr))}"')
+    print()
+
+if __name__ == "__main__":
+    n = int(sys.argv[1])
+    limit = int(sys.argv[2])
+    tests = int(sys.argv[3])
+
+    for target_d in [0.6, 0.7, 0.8, 0.9, 0.95, 1.0]:
+        test(n, limit, target_d, tests)
+```
+
+---
+
 ## Risorse
 
 - *Introduction to Algorithms* (Cormen, Leiserson, Rivest, Stein) — complessità
