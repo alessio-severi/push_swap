@@ -78,7 +78,7 @@ Esempi:
 ./push_swap --bench --adaptive $(shuf -i 0-9999 -n 500) 2>bench.txt >/dev/null
 ```
 
-### Risultato
+## Risultato
 
 ```
 $ ./push_swap --bench 12343 15109 -90227 -92000 82100 -65877 -48453 16191
