@@ -77,6 +77,35 @@ Esempi:
 ./push_swap --complex 4 67 3 87 23
 ./push_swap --bench --adaptive $(shuf -i 0-9999 -n 500) 2>bench.txt >/dev/null
 ```
+### Risultato
+
+```
+$ ./push_swap --bench 12343 15109 -90227 -92000 82100 -65877 -48453 16191
+ra
+ra
+pb
+pb
+rr
+pb
+sa
+rra
+sa
+ra
+ra
+pa
+pa
+pa
+[bench] disorder:  42.86%
+[bench] strategy:  Adaptive / O(n √n)
+[bench] total_ops:  14
+[bench] sa:  2  sb:  0  ss:  0  pa:  3  pb:  3
+[bench] ra:  4  rb:  0  rr:  1  rra:  1  rrb:  0  rrr:  0
+```
+
+Le prime 14 righe sono la sequenza di operazioni sullo stdout — quella che un checker
+consumerebbe realmente per ordinare lo stack. Le righe `[bench]`, stampate solo su
+stderr, mostrano il disorder misurato sull'input, la strategia scelta dall'adaptive
+in base a quella misura, e il conteggio delle operazioni per tipo.
 
 ## Algoritmi e scelte progettuali
 
