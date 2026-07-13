@@ -730,6 +730,12 @@ if __name__ == "__main__":
 
 ---
 
+## Valutazione del progetto
+
+<p align="center">
+  <img src="images/push_swap_125.png" width="700">
+</p>
+
 ## Risorse
 
 - *Introduction to Algorithms* (Cormen, Leiserson, Rivest, Stein) — complessità
