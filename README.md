@@ -29,7 +29,7 @@ Le quattro strategie:
 <tr><th>Strategia</th><th>Flag</th><th>Classe di complessità</th><th>Introduzione generale</th></tr>
 <tr><td>Simple</td><td><code>--simple</code></td><td>O(n²)</td><td>Longest Increasing Subsequence: la LIS resta ferma in <code>a</code>, il resto viene spinto in <code>b</code> e reinserito in modo greedy in base al costo di rotazione</td></tr>
 <tr><td>Medium</td><td><code>--medium</code></td><td>O(n&radic;n)</td><td>Suddivisione in circa &radic;n bucket annidati a strati, con un meccanismo di parcheggio per ricostruire <code>a</code> in ordine decrescente di target</td></tr>
-<tr><td>Complex</td><td><code>--complex</code></td><td>O(n log n)</td><td>Radix sort ricorsivo in base 3 (ternario), con una ricodifica affine dei rank ad ogni ricorsione per mantenere i tre bucket bilanciati</td></tr>
+<tr><td>Complex</td><td><code>--complex</code></td><td>O(n log n)</td><td>Radix sort ricorsivo in base 3 (ternario), con una ricodifica mediante una trasformazione affine dei rank ad ogni ricorsione per mantenere i tre bucket bilanciati</td></tr>
 <tr><td>Adaptive</td><td><code>--adaptive</code> (default)</td><td>sceglie una delle precedenti</td><td>Seleziona Simple / Medium / Complex a runtime in base a una metrica di <code>disorder</code> misurata sull'input</td></tr>
 </table>
 
