@@ -77,6 +77,7 @@ Esempi:
 ./push_swap --complex 4 67 3 87 23
 ./push_swap --bench --adaptive $(shuf -i 0-9999 -n 500) 2>bench.txt >/dev/null
 ```
+
 ### Risultato
 
 ```
